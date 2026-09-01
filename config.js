@@ -270,7 +270,7 @@ const CONFIG = {
   },
 
   /* ---- 11. AJUSTOS --------------------------------------- */
-  saveProgress: true,   // guarda l'avanç: si tanca la web, continua on anava
+  saveProgress: false,   // guarda l'avanç: si tanca la web, continua on anava
   allowHint:    true,   // botó "t'ajudo?" perquè no s'encalli mai
   sound:        true,   // sons suaus en encertar
 };
