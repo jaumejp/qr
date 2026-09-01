@@ -414,7 +414,7 @@ Games.quiz = function(stage, level, onComplete){
           b.classList.add('is-correct');
           ow.querySelectorAll('button').forEach(x => x.disabled = true);
           solved[qi] = true; correct++;
-          fb.textContent = 'Exacte! 💛';
+          fb.textContent = q.explain ? '✔ ' + q.explain : 'Exacte! 💛';
           App.ding();
           if(correct === total && !done){ done = true; setTimeout(onComplete, 700); }
         } else {
@@ -441,5 +441,205 @@ Games.quiz = function(stage, level, onComplete){
         }
       }
     }
+  };
+};
+
+
+/* =========================================================
+   NIVEL TIPO "relaciona" — emparejar dos columnas
+   (varias rondas: p.ej. sinónimos y traducciones)
+   ========================================================= */
+Games.relaciona = function(stage, level, onComplete){
+  const rounds = level.rounds || [{ title: '', pairs: level.pairs || [] }];
+  let ri = 0, done = false, selected = null, matched = 0, needed = 0;
+
+  stage.innerHTML = '';
+  const wrap = document.createElement('div'); wrap.className = 'rel-game'; stage.appendChild(wrap);
+  const titleEl = document.createElement('p'); titleEl.className = 'rel-title'; wrap.appendChild(titleEl);
+  const cols = document.createElement('div'); cols.className = 'rel-cols'; wrap.appendChild(cols);
+  const leftCol = document.createElement('div'); leftCol.className = 'rel-col'; cols.appendChild(leftCol);
+  const rightCol = document.createElement('div'); rightCol.className = 'rel-col'; cols.appendChild(rightCol);
+  const fb = document.createElement('p'); fb.className = 'game-feedback'; wrap.appendChild(fb);
+  const prog = document.createElement('p'); prog.className = 'round-progress'; wrap.appendChild(prog);
+
+  function board(){
+    const r = rounds[ri];
+    titleEl.textContent = r.title || '';
+    prog.textContent = rounds.length > 1 ? (ri + 1) + ' / ' + rounds.length : '';
+    fb.textContent = '';
+    leftCol.innerHTML = ''; rightCol.innerHTML = '';
+    selected = null; matched = 0; needed = r.pairs.length;
+
+    shuffle(r.pairs.map((p, i) => ({ i, t: p[0] }))).forEach(o => {
+      const b = document.createElement('button');
+      b.className = 'rel-item'; b.textContent = o.t; b.dataset.i = o.i;
+      b.addEventListener('click', () => pickLeft(b));
+      leftCol.appendChild(b);
+    });
+    shuffle(r.pairs.map((p, i) => ({ i, t: p[1] }))).forEach(o => {
+      const b = document.createElement('button');
+      b.className = 'rel-item'; b.textContent = o.t; b.dataset.i = o.i;
+      b.addEventListener('click', () => pickRight(b));
+      rightCol.appendChild(b);
+    });
+  }
+
+  function pickLeft(b){
+    if(done || b.classList.contains('is-done')) return;
+    if(selected) selected.classList.remove('is-sel');
+    selected = b; b.classList.add('is-sel');
+    fb.textContent = '';
+  }
+  function pickRight(b){
+    if(done || b.classList.contains('is-done') || !selected) return;
+    if(b.dataset.i === selected.dataset.i){
+      b.classList.add('is-done'); selected.classList.add('is-done');
+      selected.classList.remove('is-sel'); selected = null;
+      matched++; App.ding();
+      if(matched === needed){
+        ri++;
+        if(ri >= rounds.length){ done = true; setTimeout(onComplete, 650); }
+        else setTimeout(board, 650);
+      }
+    } else {
+      b.classList.add('is-bad');
+      fb.textContent = 'Aquesta no. Prova una altra.';
+      setTimeout(() => b.classList.remove('is-bad'), 500);
+    }
+  }
+
+  board();
+
+  return {
+    hint(){                       // resol una parella pendent de la ronda actual
+      const left = [...leftCol.children].find(b => !b.classList.contains('is-done'));
+      if(!left) return;
+      const right = [...rightCol.children].find(b => b.dataset.i === left.dataset.i && !b.classList.contains('is-done'));
+      if(!right) return;
+      pickLeft(left);
+      pickRight(right);
+    }
+  };
+};
+
+
+/* =========================================================
+   NIVEL TIPO "french" — sona la frase (veu del mòbil) i ella
+   la reprodueix: escrivint-la (mode 'type') o ordenant les
+   paraules estil Duolingo (mode 'words').
+   ========================================================= */
+Games.french = function(stage, level, onComplete){
+  let ri = 0, done = false;
+  const canSpeak = typeof window.speechSynthesis !== 'undefined';
+
+  stage.innerHTML = '';
+  const wrap = document.createElement('div'); wrap.className = 'fr-game'; stage.appendChild(wrap);
+  const playBtn = document.createElement('button'); playBtn.className = 'fr-play'; playBtn.innerHTML = '🔊 Escolta';
+  wrap.appendChild(playBtn);
+  const meaning = document.createElement('p'); meaning.className = 'fr-meaning'; wrap.appendChild(meaning);
+  const area = document.createElement('div'); area.className = 'fr-area'; wrap.appendChild(area);
+  const fb = document.createElement('p'); fb.className = 'game-feedback'; wrap.appendChild(fb);
+  const prog = document.createElement('p'); prog.className = 'round-progress'; wrap.appendChild(prog);
+
+  function speak(text){
+    if(!canSpeak) return false;
+    try{
+      window.speechSynthesis.cancel();
+      const u = new SpeechSynthesisUtterance(text);
+      u.lang = 'fr-FR'; u.rate = 0.9;
+      const fr = window.speechSynthesis.getVoices().find(v => (v.lang || '').toLowerCase().indexOf('fr') === 0);
+      if(fr) u.voice = fr;
+      window.speechSynthesis.speak(u);
+      return true;
+    }catch(e){ return false; }
+  }
+
+  // normalitza per comparar: minúscules, sense accents ni puntuació
+  function norm(s){
+    return s.toLowerCase().replace(/œ/g, 'oe').replace(/æ/g, 'ae')
+      .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+      .replace(/[^a-z0-9]+/g, ' ').trim();
+  }
+  function mode(r){ return r.mode || (r.fr.trim().split(/\s+/).length <= 2 ? 'type' : 'words'); }
+
+  function round(){
+    const r = level.rounds[ri];
+    prog.textContent = (ri + 1) + ' / ' + level.rounds.length;
+    fb.textContent = '';
+    meaning.textContent = 'Vol dir: «' + r.ca + '»';
+    area.innerHTML = '';
+    const spoke = speak(r.fr);
+    if(!spoke){   // el mòbil no pot llegir en veu alta: mostra la frase
+      const p = document.createElement('p'); p.className = 'fr-fallback'; p.textContent = r.fr;
+      area.appendChild(p);
+    }
+    if(mode(r) === 'type') buildType(r); else buildWords(r);
+  }
+
+  function win(){
+    App.ding();
+    ri++;
+    if(ri >= level.rounds.length){ done = true; setTimeout(onComplete, 650); }
+    else setTimeout(round, 700);
+  }
+
+  function buildType(r){
+    const input = document.createElement('input');
+    input.type = 'text'; input.className = 'fr-input';
+    input.autocomplete = 'off'; input.autocapitalize = 'none'; input.spellcheck = false;
+    input.placeholder = 'Escriu-ho en francès…';
+    const check = document.createElement('button'); check.className = 'pill-option'; check.textContent = 'Comprova';
+    area.appendChild(input); area.appendChild(check);
+    function go(){
+      if(done) return;
+      if(norm(input.value) === norm(r.fr)){ input.disabled = true; check.disabled = true; win(); }
+      else fb.textContent = 'Gairebé… torna a escoltar i prova-ho.';
+    }
+    check.addEventListener('click', go);
+    input.addEventListener('keydown', e => { if(e.key === 'Enter') go(); });
+  }
+
+  function buildWords(r){
+    const words = r.fr.trim().split(/\s+/);
+    const slots = document.createElement('div'); slots.className = 'fr-answer';
+    const bank = document.createElement('div'); bank.className = 'fr-bank';
+    area.appendChild(slots); area.appendChild(bank);
+    const placed = [];
+
+    shuffle(words.map((w, i) => ({ w, i }))).forEach(o => {
+      const t = document.createElement('button'); t.className = 'fr-word'; t.textContent = o.w;
+      t.addEventListener('click', () => {
+        if(done || t.classList.contains('is-used')) return;
+        t.classList.add('is-used');
+        placed.push({ w: o.w, tile: t });
+        renderSlots();
+        if(placed.length === words.length) check();
+      });
+      bank.appendChild(t);
+    });
+
+    function renderSlots(){
+      slots.innerHTML = '';
+      placed.forEach((p, idx) => {
+        const s = document.createElement('button'); s.className = 'fr-slot'; s.textContent = p.w;
+        s.addEventListener('click', () => { if(done) return; p.tile.classList.remove('is-used'); placed.splice(idx, 1); renderSlots(); fb.textContent = ''; });
+        slots.appendChild(s);
+      });
+    }
+    function check(){
+      if(norm(placed.map(p => p.w).join(' ')) === norm(r.fr)) win();
+      else {
+        fb.textContent = 'Aquest ordre no és. Torna a escoltar.';
+        slots.classList.add('shake');
+        setTimeout(() => { slots.classList.remove('shake'); placed.forEach(p => p.tile.classList.remove('is-used')); placed.length = 0; renderSlots(); }, 700);
+      }
+    }
+  }
+
+  playBtn.addEventListener('click', () => speak(level.rounds[ri].fr));
+  round();
+
+  return {
+    hint(){ fb.textContent = '👉 ' + level.rounds[ri].fr; }   // revela la resposta
   };
 };

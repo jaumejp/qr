@@ -519,6 +519,85 @@ button{ font-family:inherit; }
 }
 
 /* =========================================================
+   PANTALLA 0 · LA CANÇÓ
+   ========================================================= */
+.music{
+  position:fixed; inset:0; z-index:70;
+  display:flex; align-items:center; justify-content:center;
+  background:radial-gradient(circle at 50% 30%, #3A2530 0%, var(--bg-deep) 70%);
+  transition:opacity 0.8s ease;
+}
+.music.is-done{ opacity:0; pointer-events:none; z-index:-1; }  /* s'amaga però segueix sonant */
+.music-inner{ text-align:center; padding:0 28px; max-width:420px; width:100%; }
+.music-lead{
+  font-family:var(--font-script);
+  font-size:clamp(1.7rem, 7vw, 2.2rem);
+  color:var(--text-onDark); margin:0 0 24px; line-height:1.2;
+}
+.music-player{ margin:0 auto 26px; min-height:80px; display:flex; justify-content:center; }
+.music-player .song-embed{ width:100%; max-width:340px; border-radius:12px; }
+.music-player audio{ width:100%; max-width:320px; }
+.music-note{ color:var(--rose); font-size:0.8rem; margin-top:10px; }
+
+/* =========================================================
+   JOC · RELACIONA (dues columnes)
+   ========================================================= */
+.rel-game{ text-align:center; }
+.rel-title{ font-family:var(--font-serif); font-style:italic; font-size:1.05rem; color:var(--rose-deep); margin:0 0 16px; }
+.rel-cols{ display:flex; gap:14px; justify-content:center; }
+.rel-col{ display:flex; flex-direction:column; gap:10px; flex:1; max-width:180px; }
+.rel-item{
+  background:var(--paper); border:1.5px solid transparent;
+  color:var(--text-main); padding:11px 10px; border-radius:12px;
+  font-size:0.9rem; cursor:pointer; transition:transform 0.1s ease;
+}
+.rel-item:active{ transform:scale(0.97); }
+.rel-item.is-sel{ border-color:var(--rose-deep); background:#F2DCD5; }
+.rel-item.is-done{ background:var(--gold); color:var(--bg-deep); cursor:default; }
+.rel-item.is-bad{ border-color:var(--text-soft); animation:shake 0.4s ease; }
+
+/* =========================================================
+   JOC · FRANCÈS (àudio + escriure / ordenar)
+   ========================================================= */
+.fr-game{ text-align:center; }
+.fr-play{
+  background:var(--rose-deep); color:#fff; border:none;
+  padding:12px 24px; border-radius:24px; font-size:1rem; cursor:pointer;
+  margin-bottom:14px; transition:transform 0.1s ease;
+}
+.fr-play:active{ transform:scale(0.97); }
+.fr-meaning{ font-family:var(--font-serif); font-style:italic; color:var(--text-soft); font-size:1rem; margin:0 0 18px; }
+.fr-fallback{ font-family:var(--font-serif); font-size:1.15rem; color:var(--rose-deep); margin:0 0 14px; }
+.fr-area{ display:flex; flex-direction:column; align-items:center; gap:12px; }
+.fr-input{
+  width:100%; max-width:320px; padding:12px 14px; text-align:center;
+  border:1.5px solid var(--rose); border-radius:12px; background:#fff;
+  font-family:var(--font-sans); font-size:1rem; color:var(--text-main);
+}
+.fr-answer{
+  display:flex; flex-wrap:wrap; gap:8px; justify-content:center;
+  min-height:44px; width:100%; max-width:340px;
+  border-bottom:2px dashed var(--rose); padding-bottom:10px;
+}
+.fr-answer.shake{ animation:shake 0.5s ease; }
+.fr-bank{ display:flex; flex-wrap:wrap; gap:8px; justify-content:center; }
+.fr-word, .fr-slot{
+  border:1.5px solid var(--rose); padding:8px 14px; border-radius:20px;
+  font-size:0.95rem; cursor:pointer;
+}
+.fr-word{ background:var(--paper); color:var(--rose-deep); }
+.fr-word.is-used{ opacity:0.25; pointer-events:none; }
+.fr-slot{ background:var(--rose-deep); color:#fff; border-color:var(--rose-deep); }
+
+/* separador (apòstrof) dins del codi secret */
+.secret-sep{
+  display:flex; align-items:center; justify-content:center;
+  min-width:10px; height:52px;
+  font-family:var(--font-serif); font-size:1.7rem; color:var(--rose-deep);
+}
+.secret-sep.is-space{ min-width:18px; }
+
+/* =========================================================
    RESPONSIVE
    ========================================================= */
 @media (min-width:600px){

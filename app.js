@@ -77,6 +77,21 @@ const App = (function(){
   function hide(id){ $('#' + id).classList.remove('is-shown'); }
 
   /* =========================================================
+     0) CANÇÓ — primera pantalla: l'engega abans de començar
+        (la cançó segueix sonant per sota tota l'estona)
+     ========================================================= */
+  function initMusic(){
+    $('#music-lead').textContent = CONFIG.musicLead;
+    const btn = $('#music-start');
+    btn.textContent = CONFIG.musicButton;
+    buildSongInto($('#music-player'));
+    btn.addEventListener('click', () => {
+      $('#music').classList.add('is-done');   // s'amaga però es queda carregada (segueix sonant)
+      $('#sound-toggle').classList.add('is-shown');
+    });
+  }
+
+  /* =========================================================
      1) PORTADA — sello que se abre
      ========================================================= */
   function initCover(){
@@ -301,8 +316,9 @@ const App = (function(){
      6) CÓDIGO SECRETO — ordenar las letras
      ========================================================= */
   function openSecret(){
-    const target = CONFIG.secretCode.replace(/\s/g, '').toUpperCase();
-    const slotsN = target.length;
+    const raw = CONFIG.secretCode.toUpperCase();
+    const isSep = ch => ch === ' ' || ch === "'" || ch === '’';
+    const target = raw.split('').filter(ch => !isSep(ch)).join('');   // el que ha de sortir als buits
     const letters = shuffle(levels.map(l => l.letter.toUpperCase()));
 
     $('#secret-hint').textContent = CONFIG.secretHint;
@@ -314,27 +330,32 @@ const App = (function(){
     slotsEl.innerHTML = '';
     tilesEl.innerHTML = '';
 
-    const filled = new Array(slotsN).fill(null);   // {letter, tileEl} por hueco
-
-    // huecos
+    // dibuixa buits (lletres i "!") i separadors fixos (apòstrof/espai)
     const slotEls = [];
-    for(let s = 0; s < slotsN; s++){
-      const slot = document.createElement('button');
-      slot.className = 'secret-slot';
-      slot.addEventListener('click', () => removeFromSlot(s));
-      slotsEl.appendChild(slot);
-      slotEls.push(slot);
-    }
+    raw.split('').forEach(ch => {
+      if(isSep(ch)){
+        const sep = document.createElement('span');
+        sep.className = 'secret-sep' + (ch === ' ' ? ' is-space' : '');
+        sep.textContent = ch === ' ' ? '' : ch;
+        slotsEl.appendChild(sep);
+      } else {
+        const idx = slotEls.length;
+        const slot = document.createElement('button');
+        slot.className = 'secret-slot';
+        slot.addEventListener('click', () => removeFromSlot(idx));
+        slotsEl.appendChild(slot);
+        slotEls.push(slot);
+      }
+    });
 
-    // fichas
-    const tileEls = [];
+    const filled = new Array(slotEls.length).fill(null);   // {letter, tile} per buit
+
     letters.forEach(ch => {
       const t = document.createElement('button');
       t.className = 'secret-tile';
       t.textContent = ch;
       t.addEventListener('click', () => placeTile(t, ch));
       tilesEl.appendChild(t);
-      tileEls.push(t);
     });
 
     function placeTile(tile, ch){
@@ -368,7 +389,7 @@ const App = (function(){
         slotsEl.classList.add('shake');
         setTimeout(() => {
           slotsEl.classList.remove('shake');
-          for(let s = 0; s < slotsN; s++) removeFromSlot(s);
+          for(let s = 0; s < slotEls.length; s++) removeFromSlot(s);
         }, 600);
       }
     }
@@ -415,10 +436,9 @@ const App = (function(){
     sign.textContent = CONFIG.signature;
     letter.appendChild(sign);
 
-    buildSong();
-
-    // contador de días
+    // contador de dies
     const daysEl = $('#days');
+    $('#days-label').textContent = CONFIG.counterLabel;
     const start = new Date(CONFIG.startDate + 'T00:00:00');
     const diff = Math.max(0, Math.floor((Date.now() - start) / 86400000));
     daysEl.textContent = diff.toLocaleString('ca-ES');
@@ -431,28 +451,23 @@ const App = (function(){
     $('#add-calendar').addEventListener('click', downloadIcs);
   }
 
-  function buildSong(){
-    const section = $('#song-section');
-    const audio = $('#song');
+  function buildSongInto(container){
     const link = CONFIG.songLink || '';
     const spotify = link.match(/track\/([a-zA-Z0-9]+)/);
 
     if(spotify){
-      section.innerHTML =
-        '<p class="section-lead">la nostra cançó</p>' +
+      container.innerHTML =
         '<iframe class="song-embed" src="https://open.spotify.com/embed/track/' + spotify[1] +
         '?utm_source=generator&theme=0" width="100%" height="152" frameborder="0" ' +
         'allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" ' +
         'loading="lazy" title="Reproductor d\'Spotify"></iframe>';
     } else if(link){
-      section.innerHTML =
-        '<p class="section-lead">la nostra cançó</p>' +
+      container.innerHTML =
         '<a class="song-link" href="' + link + '" target="_blank" rel="noopener">Escoltar la nostra cançó</a>';
-    } else if(audio){
-      audio.addEventListener('error', () => {
-        audio.outerHTML = '<p class="game-feedback">Afegeix la teva cançó a <strong>audio/cancion.mp3</strong>, ' +
-                          'o posa songLink a config.js.</p>';
-      });
+    } else {
+      container.innerHTML =
+        '<audio controls preload="none" src="audio/cancion.mp3"></audio>' +
+        '<p class="music-note">Si no sona, posa la cançó a <strong>audio/cancion.mp3</strong> o omple songLink a config.js.</p>';
     }
   }
 
@@ -495,6 +510,7 @@ const App = (function(){
     window.__reset = () => { try{ localStorage.removeItem(KEY); }catch(e){} location.href = location.pathname; };
 
     load();
+    initMusic();
     initCover();
     initIntro();
     initSound();

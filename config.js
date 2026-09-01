@@ -9,128 +9,245 @@
 const CONFIG = {
 
   /* ---- 1. PORTADA I NOMS --------------------------------- */
-  coverTitle:  'Per a tu',                // [EDITA AQUÍ] títol del sobre tancat
-  names:       'Nom & Nom',               // [EDITA AQUÍ] els vostres noms
+  coverTitle:  'Per tu',                // [EDITA AQUÍ] títol del sobre tancat
+  names:       'Natàlia & Jaume',         // [EDITA AQUÍ] els vostres noms
   introLead:   'abans de començar…',      // frase petita sobre el carrusel
-  startButton: 'Començar el joc',         // text del botó sota el carrusel
+  startButton: 'Començar!',         // text del botó sota el carrusel
 
-  /* ---- 2. FOTOS DEL CARRUSEL ----------------------------- */
+  /* ---- 2. PANTALLA DE LA CANÇÓ (surt la primera) --------- */
+  // La cançó és el primer que veu: l'ha d'engegar abans de continuar.
+  // Un cop sona, segueix sonant per sota tota l'estona.
+  musicLead:   "Abans de res… Posarem ambient amb Lana del Rey",
+  musicButton: 'Començem!',
+
+  /* ---- 3. FOTOS DEL CARRUSEL ----------------------------- */
   // Posa les fotos a la carpeta /photos amb aquests noms
   // (o canvia els noms aquí). Mentre no existeixin, es veu un avís.
   photos: ['foto1.jpg', 'foto2.jpg', 'foto3.jpg', 'foto4.jpg', 'foto5.jpg'],
 
-  /* ---- 3. COMPTADOR DE DIES ------------------------------ */
-  startDate: '2023-01-01',                // [EDITA AQUÍ] AAAA-MM-DD, dia que vau començar
+  /* ---- 4. COMPTADOR DE DIES ------------------------------ */
+  startDate:    '2026-01-06',             // [EDITA AQUÍ] AAAA-MM-DD
+  counterLabel: 'dies junts',             // text al costat del número
 
-  /* ---- 4. EL CODI SECRET FINAL --------------------------- */
-  // Cada nivell entrega UNA lletra (més avall, camp "letter").
-  // En acabar els 5 nivells, ella haurà d'ORDENAR aquestes lletres
-  // per formar aquesta paraula i desbloquejar el final.
-  // -> Les lletres de "secretCode" han de ser les mateixes que les dels
-  //    5 nivells (l'ordre és igual). Els espais s'ignoren en comprovar-ho.
-  secretCode: 'ETS TU',
-  secretHint: 'dues paraules… qui ho és tot per a mi',
+  /* ---- 5. EL CODI SECRET FINAL --------------------------- */
+  // Cada nivell entrega UN caràcter (camp "letter"). En acabar els 8
+  // nivells, ella haurà d'ORDENAR-los per formar aquesta paraula.
+  // -> L'apòstrof i els espais es dibuixen sols com a separadors: NO
+  //    fan falta nivells per a ells. El "!" SÍ que és una peça (un nivell).
+  //    Els caràcters de "secretCode" (sense apòstrof/espais) han de coincidir
+  //    amb els 8 "letter" dels nivells (l'ordre és igual).
+  secretCode: "T'ESTIMO!",
+  secretHint: 'el que et vull dir… i ben fort',
 
-  /* ---- 5. ELS 5 NIVELLS ---------------------------------- */
-  // L'ordre aquí = l'ordre en què es desbloquegen.
-  // Camps comuns a tots:
-  //   title    → nom del nivell (es veu al camí)
-  //   intro    → instrucció curta del minijoc
-  //   letter   → la pista (UNA lletra) que entrega en superar-lo
-  //   fragment → el tros de carta que revela com a premi
+  /* ---- 6. ELS 8 NIVELLS ---------------------------------- */
+  // Camps comuns: title, intro, letter (la peça), fragment (tros de carta).
   levels: [
 
-    /* ---------- NIVELL 1 · PUZZLE DE FOTO ---------- */
+    /* -------- NIVELL 1 · PUZZLE DE FOTO -------- */
     {
       type: 'puzzle',
       title: 'El record trencat',
       intro: 'Recompon la foto. Toca dues peces per intercanviar-les.',
-      photo: 'foto1.jpg',       // [EDITA AQUÍ] foto que es recompon
-      size: 3,                  // 3 = puzzle de 3x3 (9 peces)
-      letter: 'E',
-      fragment: "Des del dia que vas aparèixer, fins i tot el més normal va començar a semblar-me una mica extraordinari.",
+      photo: 'foto1.jpg',       // [EDITA AQUÍ]
+      size: 3,
+      letter: 'S',
+      fragment: "Primer vam ser coneguts/amics, i ja de llavors eres la persona amb qui tot era més fàcil. Només faltava un petit impuls perquè tot començes a rodar...",
     },
 
-    /* ---------- NIVELL 2 · SOPA DE LLETRES ---------- */
-    {
-      type: 'wordsearch',
-      title: 'Paraules amagades',
-      intro: 'Troba les paraules. Arrossega el dit per sobre de les lletres.',
-      words: ['NOSALTRES', 'SEMPRE', 'JUNTS'],   // [EDITA AQUÍ] MAJÚSCULES, sense espais
-      size: 11,                 // mida de la quadrícula (11x11)
-      letter: 'T',
-      fragment: "M'agrada fins i tot l'avorriment, si és amb tu. Sobretot l'avorriment, de fet.",
-    },
-
-    /* ---------- NIVELL 3 · MEMORY / PARELLES ---------- */
+    /* -------- NIVELL 2 · MEMORY / PARELLES -------- */
     {
       type: 'memory',
       title: 'Troba les parelles',
       intro: 'Gira les cartes i troba les parelles.',
-      cards: ['🌙', '☕', '🎬', '🌊', '🎶', '🐾'],  // [EDITA AQUÍ] 6 símbols = 6 parelles
-      letter: 'S',
-      fragment: "Cadascun d'aquests detalls em porta a un moment amb tu. I me'n queden molts per viure.",
+      cards: ['🌙', '☕', '🎬', '🌊', '🎶', '🐾'],  // [EDITA AQUÍ] 6 símbols
+      letter: 'T',
+      fragment: "El sis de gener, ens vam donar permís per començar a escriure la nostre història, i de cop tot es va tornar especial.",
     },
 
-    /* ---------- NIVELL 4 · ENDEVINA AMB EMOJIS ---------- */
+    /* -------- NIVELL 3 · SOPA DE LLETRES -------- */
+    {
+      type: 'wordsearch',
+      title: 'Paraules amagades',
+      intro: 'Troba les paraules. Arrossega el dit per sobre de les lletres.',
+      words: ['ESTIMAR', 'ABRAÇADA', 'SEMPRE', 'GUAPA', 'OBSERVADORA', 'INTELIGENT'],   // [EDITA AQUÍ] MAJÚSCULES, sense espais
+      size: 11,
+      letter: 'I',
+      fragment: "M'agrada la passió, les ganes i el detall que poses en tot el que fas, també en la feina. Ets una inspiració! ❤️",
+    },
+
+    /* -------- NIVELL 4 · RELACIONA (sinònims + traducció) -------- */
+    // Joc nou: dues columnes. Toca una paraula i el seu parell.
+    {
+      type: 'relaciona',
+      title: 'Relaciona-ho',
+      intro: 'Toca una paraula i després el seu parell.',
+      rounds: [   // [EDITA AQUÍ] cada ronda: un títol i les seves parelles
+        {
+          title: 'Cada paraula amb el seu sinònim',
+          pairs: [
+            ['eixut', 'eixorc'],
+            ['ubiqüitat', 'omnipresència'],
+            ['pusillànime', 'arronsat'],
+            ['inefable', 'indescriptable'],
+            ['vesànic', 'dement'],
+          ],
+        },
+        {
+          title: 'Del castellà al català',
+          pairs: [
+            ['desahuciar', 'desnonar'],
+            ['tobillo', 'turmell'],
+            ['bisagra', 'frontissa'],
+            ['canapé', 'sofà llit'],
+            ['estornudo', 'esternut'],
+          ],
+        },
+      ],
+      letter: 'M',
+      fragment: "M'agrada com penses, com esculls les paraules per expressar-te i com saps dir el que sents.",
+    },
+
+    /* -------- NIVELL 5 · PRONOMINALITZACIÓ -------- */
+    // Tria la forma correcta. "correct" = índex de l'opció bona.
+    // "explain" (opcional) es mostra en encertar.
+    {
+      type: 'quiz',
+      title: 'Pronominalitza',
+      intro: 'Substitueix els complements pels pronoms correctes.',
+      questions: [   // [EDITA AQUÍ]
+        {
+          question: '«No vulguis dir la veritat als testimonis.»',
+          options: ["No la hi vulguis dir", "No la els vulguis dir", "No els la vulguis dir"],
+          correct: 2,
+          explain: "la veritat (CD determinat) → la; als testimonis (CI plural) → els. L'ordre de combinació és CI + CD: els + la = els la.",
+        },
+        {
+          question: '«Porteu aigua als excursionistes!»',
+          options: ["Porteu-los-en!", "Porteu-les-hi!", "Porteu-n'hi!"],
+          correct: 0,
+          explain: "aigua (CD indeterminat) → en; als excursionistes (CI plural) → els. Al darrere del verb: els + en = -los-en.",
+        },
+        {
+          question: '«Posa sal a la sopa.»',
+          options: ["Posa-l'hi", "Posa-n'hi", "Posa-li'n"],
+          correct: 1,
+          explain: "sal (CD indeterminat) → en; a la sopa (CCL) → hi. en + hi = n'hi (al darrere del verb d'imperatiu: posa-n'hi).",
+        },
+        {
+          question: '«Anem a la platja a prendre el sol.»',
+          options: ["Anem-hi", "Anem-n'hi", "Anem-ne"],
+          correct: 0,
+          explain: "a la platja (CCL introduït per 'a') → hi. No es pronominalitza el complement de finalitat en aquesta combinació simple.",
+        },
+        {
+          question: '«Vaig donar les gràcies als professors.»',
+          options: ["Les hi vaig donar", "Els les vaig donar", "Li les vaig donar"],
+          correct: 1,
+          explain: "les gràcies (CD determinat plural) → les; als professors (CI plural) → els. Combinació: els + les = els les.",
+        },
+      ],
+      letter: 'O',
+      fragment: "M'agraden els plans tranquils amb tu tant com els grans; potser fins i tot més. Simplement necessito la teva presència i el teu carinyo, tal com ja fas.",
+    },
+
+    /* -------- NIVELL 6 · FRANCÈS -------- */
+    // Joc nou: sona la frase en francès (veu del mòbil) i ella la reprodueix.
+    //   mode 'type'  → l'escriu al teclat (per a frases fàcils)
+    //   mode 'words' → ordena les paraules, estil Duolingo (per a frases llargues)
+    //   ca = què vol dir · fr = la frase francesa (el que ha de fer)
+    {
+      type: 'french',
+      title: 'Escolta el francès',
+      intro: 'Sona una frase en francès. Escriu-la o ordena-la.',
+      rounds: [   // [EDITA AQUÍ]
+        { ca: 'Gràcies',                          fr: 'Merci',                       mode: 'type'  },
+        { ca: 'Em dic Natàlia',                   fr: "Je m'appelle Natàlia",        mode: 'type'  },
+        { ca: 'La meva germana viu a Milà',       fr: 'Ma sœur habite à Milan',      mode: 'words' },
+        { ca: 'El meu tiet és divertit',          fr: 'Mon oncle est amusant',       mode: 'words' },
+      ],
+      letter: 'E',
+      fragment: "Jo faig la meva ruta d'escacs i tu la de francès, però sort que la llengua que ens uneix és una tan maca com és el català. M'agrada poder-nos comunicar en la nostra llengua materna, però si n'hagués d'aprendre una de nova només per fer-te riure, també ho faria. ♟️🇫🇷❤️.",
+    },
+
+    /* -------- NIVELL 7 · ENDEVINA AMB EMOJIS -------- */
     {
       type: 'emoji',
-      title: 'Digues-ho amb emojis',
+      title: 'Vull viure-ho tot amb tu. Començaríem per...',
       intro: "Què amaga cada línia d'emojis?",
-      rounds: [   // [EDITA AQUÍ] cada ronda: els emojis, la resposta i les 3 opcions
-        { emojis: '🎬🍿🛋️', answer: 'Nit de pel·li',        options: ['Nit de pel·li', 'Cine mut', 'Crispetes fredes'] },
-        { emojis: '✈️🌴🍹',  answer: 'Les nostres vacances', options: ['Un dilluns qualsevol', 'Les nostres vacances', 'La llista de la compra'] },
+      rounds: [   // [EDITA AQUÍ]
+        { emojis: '🎬🍿🛋️',  answer: 'Nit de pel·li',        options: ['Nit de pel·li', 'Cine mut', 'Crispetes fredes'] },
+        { emojis: '✈️🌴🍹',  answer: 'Descobrir nous indrets', options: ['Un dilluns qualsevol', 'Descobrir nous indrets', 'La llista de la compra'] },
         { emojis: '🌧️☕🎶',  answer: 'Diumenge a casa',      options: ['Diumenge a casa', 'Un examen', 'El gimnàs'] },
       ],
       letter: 'T',
-      fragment: "No necessito plans espectaculars. Una pel·li, un cafè i tu, i ja soc al meu lloc preferit.",
+      fragment: "Cada moment al teu costat és increïble. Saber que són efímers fa que els gaudeixi encara més, que els visqui més intensament i que estigui més present en cadascun d'ells.",
     },
 
-    /* ---------- NIVELL 5 · QUIZ ---------- */
+    /* -------- NIVELL 8 · QUIZ DE VOSALTRES -------- */
     {
       type: 'quiz',
-      title: "Quant te'n recordes?",
-      intro: "Última prova. Demostra'm que te'n recordes de tot.",
-      questions: [   // "correct" = índex (0, 1, 2…) de l'opció correcta
-        { question: 'En quin mes ens vam conèixer?',     options: ['Març', 'Juliol', 'Desembre'], correct: 0 },
-        { question: 'On va ser el nostre primer viatge?', options: ['La platja', 'La muntanya', 'Una altra ciutat'], correct: 2 },
-        { question: 'Què demanem sempre per sopar?',      options: ['Pizza', 'Sushi', 'Tacos'], correct: 1 },
+      title: 'Quant te’n recordes?',
+      intro: 'Última prova. Demostra que te’n recordes de tot.',
+      questions: [   // [EDITA AQUÍ] posa-hi coses vostres reals
+        { 
+          question: 'On ens vam veure per primer cop?', 
+          options: ['Banyoles', 'Palafrugell', 'Girona', 'Palamós'], 
+          correct: 1 
+        },
+        { 
+          question: 'Quina va ser la nostra primera sèrie junts?', 
+          options: ['Big Bang Theory', 'El cuento de la criada', 'From', 'Breaking Bad'], 
+          correct: 1 
+        },
+        { 
+          question: 'Quina va ser la nostra primera peli junts?', 
+          options: ['Project Hail Mary', 'The housemaid', 'Avatar', 'Rocky 2'], 
+          correct: 2 
+        },
+        { 
+          question: 'Quin va ser el primer plat que vam menjar junts a un restaurant?', 
+          options: ['Tempura de verdures', 'Niguiri de salmó', 'Yakisoba de llangostí', 'Yakisoba de verdures'], 
+          correct: 2 
+        },
+        { 
+          question: 'En quin lloc i context vaig pujar per primer cop al teu cotxe? Recordem la història que no la recordo...', 
+          options: ["Gràcies a l'Anna", "Gràcies a la Omayma", "Gràcies a en Marc", "Gràcies a l'Àlex"], 
+          correc
+        }
       ],
-      letter: 'U',
-      fragment: "T'ho has guanyat. Ja ho saps tot de nosaltres… menys el que ve ara.",
+      letter: '!',
+      fragment: "Ja ho tens gairebé tot. Només et queda ordenar les lletres per llegir el que et vull dir.",
     },
 
   ],
 
-  /* ---- 6. RETROSPECTIVA (es veu al final) ---------------- */
-  milestones: [
-    { date: 'Març 2021',  title: 'Ens vam conèixer' },
-    { date: 'Juny 2021',  title: 'La nostra primera cita' },
-    { date: 'Agost 2022', title: 'El primer viatge junts' },
-    { date: 'Avui',       title: 'Seguim escrivint aquesta història' },
+  /* ---- 7. RETROSPECTIVA (es veu al final) ---------------- */
+  milestones: [   // [EDITA AQUÍ]
+    { date: '6 de gener de 2026', title: 'Alguna cosa va canviar' },
+    { date: 'Aquell hivern',      title: 'La primera vegada que ho vaig saber' },
+    { date: 'Avui',               title: 'I només acabem de començar' },
   ],
 
-  /* ---- 7. SIGNATURA DE LA CARTA -------------------------- */
-  signature: '— El teu nom',
+  /* ---- 8. SIGNATURA DE LA CARTA -------------------------- */
+  signature: '— Jaume',
 
-  /* ---- 8. CANÇÓ ------------------------------------------ */
-  // Enllaç d'Spotify (recomanat) o de YouTube; o deixa'l en '' (buit)
-  // i posa el fitxer a audio/cancion.mp3.
+  /* ---- 9. CANÇÓ ------------------------------------------ */
+  // Enllaç d'Spotify (recomanat). Es fa servir a la pantalla del principi.
   songLink: 'https://open.spotify.com/track/1fzAuUVbzlhZ1lJAx9PtY6',
 
-  /* ---- 9. EL PLA REAL ------------------------------------ */
+  /* ---- 10. EL PLA REAL ----------------------------------- */
   finaleLead: "i això no s'acaba aquí",
   finalePlan: 'Avui a les 20:00h, al nostre lloc de sempre.',
   plan: {
     title:        'El nostre pla',
     description:  'Una sorpresa que he preparat per a tu.',
-    location:     'El nostre lloc de sempre',   // s'utilitza també per a "Com arribar-hi"
-    start:        '2026-09-01T20:00:00',         // AAAA-MM-DDTHH:MM:SS (hora local)
+    location:     'El nostre lloc de sempre',
+    start:        '2026-09-01T20:00:00',
     durationHours: 2,
   },
 
-  /* ---- 10. AJUSTOS --------------------------------------- */
-  saveProgress: true,   // guarda l'avanç: si tanca la web, pot continuar on anava
-  allowHint:    true,   // mostra un botó "t'ajudo?" perquè no s'encalli mai
-  sound:        true,   // sons suaus en encertar (sense fitxers, es generen sols)
+  /* ---- 11. AJUSTOS --------------------------------------- */
+  saveProgress: true,   // guarda l'avanç: si tanca la web, continua on anava
+  allowHint:    true,   // botó "t'ajudo?" perquè no s'encalli mai
+  sound:        true,   // sons suaus en encertar
 };

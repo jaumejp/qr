@@ -14,8 +14,19 @@
 </head>
 <body>
 
-  <!-- botó de silenci (apareix en obrir el sobre) -->
+  <!-- botó de silenci (apareix en engegar la cançó) -->
   <button id="sound-toggle" class="sound-toggle" aria-label="So">🔊</button>
+
+  <!-- ============================================= -->
+  <!-- PANTALLA 0: la cançó (l'ha d'engegar primer)   -->
+  <!-- ============================================= -->
+  <div id="music" class="music">
+    <div class="music-inner">
+      <p class="music-lead" id="music-lead">Abans de res… engega la nostra cançó</p>
+      <div class="music-player" id="music-player"><!-- reproductor generat des de config.js --></div>
+      <button id="music-start" class="btn-primary btn-lg">Ja sona ▶</button>
+    </div>
+  </div>
 
   <!-- ============================================= -->
   <!-- PORTADA: segell per obrir                      -->
@@ -131,13 +142,8 @@
 
       <div class="final-letter" id="final-letter" aria-label="Carta completa"></div>
 
-      <div class="song-section" id="song-section">
-        <p class="section-lead">la nostra cançó</p>
-        <audio id="song" controls preload="none" src="audio/cancion.mp3"></audio>
-      </div>
-
       <div class="counter">
-        <p><span id="days">0</span> dies junts</p>
+        <p><span id="days">0</span> <span id="days-label">dies junts</span></p>
         <p class="counter-hint">(i sumant)</p>
       </div>
     </div>
