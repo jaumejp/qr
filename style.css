@@ -1,0 +1,526 @@
+/* =========================================================
+   TOKENS
+   ========================================================= */
+:root{
+  --bg-deep:    #2B1B20;   /* fondo oscuro (portada / plan final) */
+  --bg-cream:   #FBF1EC;   /* fondo "papel" interior */
+  --rose:       #C77B87;   /* rosa medio, acentos y bordes */
+  --rose-deep:  #9C4F5C;   /* rosa oscuro, énfasis */
+  --gold:       #C9A467;   /* dorado suave, sello / aciertos */
+  --text-main:  #3B2A2E;   /* texto sobre crema */
+  --text-onDark:#F3E6DE;   /* texto sobre oscuro */
+  --text-soft:  #8A6B70;   /* texto secundario */
+  --paper:      #F5E8E2;   /* notas / tarjetas claras */
+
+  --font-script:'Dancing Script', cursive;
+  --font-serif: 'Cormorant Garamond', serif;
+  --font-sans:  'Jost', sans-serif;
+}
+
+*{ box-sizing:border-box; }
+
+html,body{
+  margin:0; padding:0;
+  background:var(--bg-cream);
+  color:var(--text-main);
+  font-family:var(--font-sans);
+  overflow-x:hidden;
+}
+
+@media (prefers-reduced-motion: reduce){
+  *{ animation-duration:0.001ms !important; animation-iteration-count:1 !important; transition-duration:0.001ms !important; }
+}
+
+button{ font-family:inherit; }
+:focus-visible{ outline:2px solid var(--gold); outline-offset:3px; }
+
+/* =========================================================
+   PANTALLAS Y OVERLAYS
+   ========================================================= */
+.screen{ display:none; }
+.screen.is-shown{ display:block; animation:screen-in 0.6s ease both; }
+@keyframes screen-in{ from{ opacity:0; transform:translateY(12px); } to{ opacity:1; transform:none; } }
+
+.screen-inner{
+  max-width:520px;
+  margin:0 auto;
+  padding:64px 24px 88px;
+}
+
+.overlay{
+  position:fixed; inset:0; z-index:40;
+  display:none;
+  align-items:center; justify-content:center;
+  padding:18px;
+  background:rgba(43,27,32,0.55);
+  backdrop-filter:blur(3px);
+}
+.overlay.is-shown{ display:flex; animation:screen-in 0.35s ease both; }
+
+/* =========================================================
+   BOTONES
+   ========================================================= */
+.btn-primary, .btn-secondary{
+  font-family:var(--font-sans);
+  font-size:0.9rem;
+  font-weight:500;
+  padding:12px 24px;
+  border-radius:26px;
+  text-decoration:none;
+  cursor:pointer;
+  border:1px solid var(--gold);
+  transition:transform 0.15s ease, filter 0.15s ease;
+}
+.btn-primary{ background:var(--gold); color:var(--bg-deep); }
+.btn-secondary{ background:transparent; color:var(--rose-deep); border-color:var(--rose); }
+.btn-primary:hover, .btn-secondary:hover{ filter:brightness(1.05); }
+.btn-primary:active, .btn-secondary:active{ transform:scale(0.97); }
+.btn-lg{ padding:14px 34px; font-size:1rem; margin-top:8px; }
+
+.icon-btn{
+  background:none; border:none; cursor:pointer;
+  font-size:1.8rem; line-height:1;
+  color:var(--rose-deep); padding:4px 10px;
+}
+.link-btn{
+  background:none; border:none; cursor:pointer;
+  color:var(--text-soft); font-size:0.85rem;
+  text-decoration:underline; text-underline-offset:3px;
+}
+
+/* botón de silencio */
+.sound-toggle{
+  position:fixed; top:12px; right:12px; z-index:60;
+  width:40px; height:40px; border-radius:50%;
+  border:1px solid var(--rose);
+  background:rgba(251,241,236,0.9);
+  font-size:1.05rem; cursor:pointer;
+  display:none;
+}
+.sound-toggle.is-shown{ display:block; }
+
+/* =========================================================
+   PORTADA
+   ========================================================= */
+.cover{
+  position:fixed; inset:0; z-index:50;
+  display:flex; align-items:center; justify-content:center;
+  background:radial-gradient(circle at 50% 30%, #3A2530 0%, var(--bg-deep) 70%);
+  transition:opacity 1.1s ease, visibility 1.1s ease;
+}
+.cover.is-open{ opacity:0; visibility:hidden; pointer-events:none; }
+.cover-inner{ text-align:center; padding:0 32px; }
+
+.seal{
+  background:none; border:none; cursor:pointer; padding:0;
+  width:92px; height:92px; margin:0 auto 28px; display:block;
+  animation:seal-breathe 3.2s ease-in-out infinite;
+}
+.seal:hover{ filter:brightness(1.08); }
+.seal-svg path{ fill:var(--gold); filter:drop-shadow(0 4px 10px rgba(0,0,0,0.35)); }
+.seal-letter{ fill:var(--bg-deep); font-family:var(--font-serif); font-size:34px; }
+@keyframes seal-breathe{ 0%,100%{ transform:scale(1); } 50%{ transform:scale(1.05); } }
+.seal.is-cracking{ animation:seal-crack 0.6s ease forwards; }
+@keyframes seal-crack{
+  0%{ transform:scale(1); }
+  40%{ transform:scale(1.18) rotate(-4deg); }
+  100%{ transform:scale(0.2) rotate(8deg); opacity:0; }
+}
+.cover-title{
+  font-family:var(--font-script); font-weight:700;
+  font-size:clamp(2.6rem, 10vw, 3.6rem);
+  color:var(--text-onDark); margin:0 0 6px;
+}
+.cover-hint{ font-size:0.85rem; letter-spacing:0.02em; color:var(--rose); margin:0; }
+
+/* =========================================================
+   INTRO
+   ========================================================= */
+.intro .screen-inner{ text-align:center; }
+.names{
+  font-family:var(--font-script); font-weight:700;
+  font-size:clamp(2.2rem, 9vw, 2.8rem);
+  color:var(--rose-deep); margin:0 0 14px;
+}
+.divider-svg{ width:60px; height:20px; }
+.divider-svg path{ fill:none; stroke:var(--rose); stroke-width:1.5; }
+.intro-lead{
+  font-family:var(--font-serif); font-style:italic;
+  font-size:1.1rem; color:var(--rose-deep); margin:14px 0 22px;
+}
+
+/* =========================================================
+   CARRUSEL
+   ========================================================= */
+.carousel-section{ margin-bottom:26px; }
+.carousel{
+  position:relative; border-radius:6px; overflow:hidden;
+  aspect-ratio:4/5; background:#EDE0DA;
+  box-shadow:0 18px 40px -18px rgba(59,42,46,0.45);
+}
+.carousel-track{ display:flex; height:100%; transition:transform 0.5s cubic-bezier(.22,.9,.32,1); touch-action:pan-y; }
+.slide{ min-width:100%; height:100%; }
+.slide img{ width:100%; height:100%; object-fit:cover; display:block; }
+
+.img-placeholder{
+  width:100%; height:100%;
+  display:flex; flex-direction:column; align-items:center; justify-content:center; gap:10px;
+  background:repeating-linear-gradient(135deg, #EDE0DA, #EDE0DA 10px, #E5D3CB 10px, #E5D3CB 20px);
+  color:var(--rose-deep); font-size:0.8rem; text-align:center; padding:20px;
+}
+.img-placeholder .heart{ font-family:var(--font-serif); font-size:2rem; opacity:0.6; }
+
+.carousel-arrow{
+  position:absolute; top:50%; transform:translateY(-50%);
+  background:rgba(251,241,236,0.85); color:var(--rose-deep);
+  border:none; width:36px; height:36px; border-radius:50%;
+  font-size:1.3rem; line-height:1; cursor:pointer;
+  display:flex; align-items:center; justify-content:center;
+}
+.carousel-arrow.prev{ left:10px; }
+.carousel-arrow.next{ right:10px; }
+
+.dots{ display:flex; justify-content:center; gap:8px; margin-top:16px; }
+.dot{ width:6px; height:6px; border-radius:50%; background:var(--rose); opacity:0.35; border:none; padding:0; cursor:pointer; }
+.dot.is-active{ opacity:1; width:18px; border-radius:4px; transition:width 0.3s ease; }
+
+/* =========================================================
+   TEXTO INTRODUCTORIO DE SECCIÓN
+   ========================================================= */
+.section-lead{
+  font-family:var(--font-serif); font-style:italic;
+  font-size:1.15rem; color:var(--rose-deep);
+  text-align:center; margin:0 0 20px;
+}
+
+/* =========================================================
+   SENDERO (HUB)
+   ========================================================= */
+.trail-screen .screen-inner{ text-align:center; }
+.trail-head{ margin-bottom:26px; }
+
+.letters-tray{ display:flex; justify-content:center; gap:8px; margin:14px 0 8px; }
+.letter-slot{
+  width:34px; height:40px; border-radius:6px;
+  border:1.5px dashed var(--rose);
+  display:flex; align-items:center; justify-content:center;
+  font-family:var(--font-serif); font-size:1.2rem; font-weight:500;
+  color:var(--text-soft); background:transparent;
+}
+.letter-slot.is-filled{
+  border-style:solid; border-color:var(--gold);
+  background:var(--gold); color:var(--bg-deep);
+  animation:pop 0.4s ease;
+}
+@keyframes pop{ 0%{ transform:scale(0.5); } 60%{ transform:scale(1.15); } 100%{ transform:scale(1); } }
+.progress-label{ font-size:0.8rem; color:var(--text-soft); margin:0; letter-spacing:0.04em; }
+
+.trail{ list-style:none; margin:0 auto; padding:0; max-width:340px; position:relative; }
+.trail::before{
+  content:''; position:absolute; top:26px; bottom:26px; left:50%;
+  width:2px; margin-left:-1px;
+  background:repeating-linear-gradient(var(--rose) 0 6px, transparent 6px 12px);
+  opacity:0.5;
+}
+.trail-node{
+  position:relative; z-index:1;
+  display:flex; align-items:center; gap:14px;
+  padding:12px 0; text-align:left;
+}
+.trail-node:nth-child(even){ flex-direction:row-reverse; text-align:right; }
+
+.node-dot{
+  flex:0 0 auto;
+  width:54px; height:54px; border-radius:50%;
+  border:2px solid var(--rose); cursor:pointer;
+  background:var(--bg-cream); color:var(--rose-deep);
+  font-size:1.2rem; display:flex; align-items:center; justify-content:center;
+  box-shadow:0 6px 14px -8px rgba(59,42,46,0.5);
+}
+.node-dot:disabled{ cursor:default; }
+.node-num{ font-family:var(--font-serif); font-size:1.4rem; font-weight:500; }
+.node-check{ color:var(--bg-deep); }
+.node-lock{ font-size:1.1rem; }
+
+.trail-node.is-done .node-dot{ background:var(--gold); border-color:var(--gold); }
+.trail-node.is-locked .node-dot{ opacity:0.45; filter:grayscale(0.3); background:var(--paper); }
+.trail-node.is-current .node-dot{ animation:node-pulse 1.8s ease-in-out infinite; border-color:var(--rose-deep); }
+@keyframes node-pulse{
+  0%,100%{ box-shadow:0 0 0 0 rgba(156,79,92,0.4); }
+  50%{ box-shadow:0 0 0 10px rgba(156,79,92,0); }
+}
+
+.node-info{ display:flex; flex-direction:column; gap:2px; }
+.node-title{ font-size:0.95rem; color:var(--text-main); font-weight:500; }
+.trail-node.is-locked .node-title{ color:var(--text-soft); }
+.node-letter{ font-size:0.75rem; color:var(--rose-deep); font-style:italic; }
+
+/* =========================================================
+   PANEL DE JUEGO
+   ========================================================= */
+.panel-card{
+  background:var(--bg-cream);
+  width:100%; max-width:520px;
+  max-height:92dvh;
+  border-radius:14px;
+  display:flex; flex-direction:column;
+  overflow:hidden;
+  box-shadow:0 30px 60px -20px rgba(0,0,0,0.5);
+}
+.panel-head{
+  display:flex; align-items:center; gap:6px;
+  padding:12px 14px; border-bottom:1px solid #EADBD4;
+}
+.panel-head h2{
+  font-family:var(--font-serif); font-weight:500;
+  font-size:1.25rem; color:var(--rose-deep); margin:0;
+}
+.game-intro{
+  margin:14px 20px 4px; text-align:center;
+  font-size:0.9rem; color:var(--text-soft);
+}
+.game-stage{
+  padding:14px 20px 6px;
+  overflow-y:auto; -webkit-overflow-scrolling:touch;
+}
+.panel-foot{ padding:10px 20px 16px; text-align:center; }
+
+.game-feedback{
+  margin:10px 0 0; min-height:1.2em;
+  font-size:0.85rem; font-style:italic; color:var(--text-soft); text-align:center;
+}
+
+/* opciones tipo pastilla (emoji / quiz) */
+.options-col{ display:flex; flex-direction:column; gap:10px; max-width:340px; margin:0 auto; }
+.pill-option{
+  background:transparent; border:1.5px solid var(--rose);
+  color:var(--rose-deep); padding:12px 18px; border-radius:24px;
+  font-size:0.95rem; cursor:pointer; transition:transform 0.12s ease;
+}
+.pill-option:active{ transform:scale(0.98); }
+.pill-option:disabled{ cursor:default; }
+.pill-option.is-correct{ background:var(--rose-deep); border-color:var(--rose-deep); color:var(--text-onDark); }
+.pill-option.is-wrong{ border-color:var(--text-soft); color:var(--text-soft); opacity:0.55; }
+
+/* --- PUZZLE --- */
+.puzzle-board{
+  display:grid;
+  grid-template-columns:repeat(var(--n), 1fr);
+  gap:4px; aspect-ratio:1; max-width:340px; margin:0 auto;
+}
+.puzzle-piece{
+  aspect-ratio:1; padding:0; cursor:pointer;
+  border:1px solid rgba(156,79,92,0.18);
+  background:#E5D3CB center/cover no-repeat;
+  border-radius:3px; overflow:hidden;
+  font-family:var(--font-serif); font-size:1.3rem; color:var(--rose-deep);
+  transition:transform 0.12s ease, box-shadow 0.12s ease;
+}
+.puzzle-piece.is-numbered{ background:linear-gradient(135deg, #E7CFC7, #D3AAA0); }
+.puzzle-piece.is-selected{ box-shadow:0 0 0 3px var(--gold); transform:scale(0.94); z-index:1; }
+.puzzle-board.is-solved{ gap:0; }
+.puzzle-board.is-solved .puzzle-piece{ box-shadow:none; border-radius:0; }
+
+/* --- SOPA DE LETRAS --- */
+.ws-wrap{ display:flex; flex-direction:column; gap:14px; align-items:center; }
+.ws-grid{
+  display:grid;
+  grid-template-columns:repeat(var(--n), 1fr);
+  gap:2px; width:100%; max-width:340px;
+  touch-action:none; user-select:none;
+}
+.ws-cell{
+  aspect-ratio:1;
+  display:flex; align-items:center; justify-content:center;
+  background:var(--paper); border-radius:3px;
+  font-size:clamp(0.6rem, 2.6vw, 0.9rem); font-weight:500;
+  color:var(--text-main); text-transform:uppercase;
+}
+.ws-cell.is-sel{ background:var(--rose); color:#fff; }
+.ws-cell.is-found{ background:var(--gold); color:var(--bg-deep); }
+.ws-words{ display:flex; flex-wrap:wrap; justify-content:center; gap:8px 14px; }
+.ws-word{ font-size:0.85rem; letter-spacing:0.06em; color:var(--rose-deep); }
+.ws-word.is-found{ color:var(--text-soft); text-decoration:line-through; opacity:0.6; }
+
+/* --- MEMORY --- */
+.memory-grid{
+  display:grid;
+  grid-template-columns:repeat(var(--cols), 1fr);
+  gap:8px; max-width:340px; margin:0 auto;
+}
+.memory-card{
+  position:relative;
+  aspect-ratio:3/4; border:none; padding:0; background:none;
+  cursor:pointer;
+}
+.memory-inner{ position:absolute; inset:0; }
+.memory-face{
+  position:absolute; inset:0;
+  display:flex; align-items:center; justify-content:center;
+  border-radius:8px; font-size:1.6rem;
+  transition:opacity 0.25s ease;
+}
+.memory-back{ background:linear-gradient(135deg, var(--rose), var(--rose-deep)); color:#fff; }
+.memory-front{ background:var(--paper); opacity:0; }
+.memory-card.is-up .memory-back{ opacity:0; }
+.memory-card.is-up .memory-front{ opacity:1; }
+.memory-card.is-done{ opacity:0.5; }
+
+/* --- EMOJI --- */
+.emoji-game{ text-align:center; }
+.emoji-display{ font-size:2.6rem; letter-spacing:6px; margin:6px 0 18px; }
+.round-progress{ margin-top:14px; font-size:0.75rem; color:var(--text-soft); letter-spacing:0.1em; }
+
+/* --- QUIZ --- */
+.quiz-question{ margin-bottom:24px; text-align:center; }
+.quiz-question:last-child{ margin-bottom:0; }
+.quiz-prompt{ font-size:1rem; margin:0 0 12px; color:var(--text-main); }
+
+/* =========================================================
+   RECOMPENSA
+   ========================================================= */
+.reward-card{
+  background:var(--bg-cream); border-radius:16px;
+  max-width:380px; width:100%; padding:32px 26px;
+  text-align:center;
+  box-shadow:0 30px 60px -20px rgba(0,0,0,0.5);
+}
+.reward-kicker{
+  font-family:var(--font-serif); font-style:italic;
+  color:var(--rose-deep); font-size:1.05rem; margin:0 0 14px;
+}
+.reward-letter{
+  width:84px; height:84px; margin:0 auto 20px;
+  border-radius:14px; background:var(--gold); color:var(--bg-deep);
+  display:flex; align-items:center; justify-content:center;
+  font-family:var(--font-serif); font-size:3rem; font-weight:600;
+  box-shadow:0 14px 30px -12px rgba(201,164,103,0.8);
+  animation:pop 0.5s ease;
+}
+.reward-note{
+  background:var(--paper); border-radius:6px;
+  padding:18px 20px; margin:0 0 24px;
+  font-family:var(--font-serif); font-style:italic;
+  font-size:1.15rem; line-height:1.5; color:var(--text-main);
+  box-shadow:0 8px 16px -10px rgba(59,42,46,0.35);
+  transform:rotate(-0.6deg);
+}
+
+/* =========================================================
+   CÓDIGO SECRETO
+   ========================================================= */
+.secret-card{
+  background:var(--bg-cream); border-radius:16px;
+  max-width:420px; width:100%; padding:30px 24px;
+  text-align:center;
+  box-shadow:0 30px 60px -20px rgba(0,0,0,0.5);
+}
+.secret-hint{ font-size:0.9rem; color:var(--text-soft); font-style:italic; margin:0 0 20px; }
+.secret-slots{ display:flex; justify-content:center; gap:8px; margin-bottom:22px; flex-wrap:wrap; }
+.secret-slots.shake{ animation:shake 0.5s ease; }
+@keyframes shake{ 0%,100%{ transform:translateX(0); } 20%,60%{ transform:translateX(-7px); } 40%,80%{ transform:translateX(7px); } }
+.secret-slot{
+  width:42px; height:52px; border-radius:8px;
+  border:2px solid var(--rose); background:transparent; cursor:pointer;
+  font-family:var(--font-serif); font-size:1.6rem; font-weight:600; color:var(--rose-deep);
+}
+.secret-slot.is-filled{ border-style:solid; background:var(--paper); }
+.secret-slot.is-correct{ background:var(--gold); border-color:var(--gold); color:var(--bg-deep); animation:pop 0.4s ease; }
+
+.secret-tiles{ display:flex; justify-content:center; gap:10px; flex-wrap:wrap; }
+.secret-tile{
+  width:46px; height:46px; border-radius:10px;
+  border:none; cursor:pointer;
+  background:var(--rose-deep); color:#fff;
+  font-family:var(--font-serif); font-size:1.4rem; font-weight:600;
+  box-shadow:0 6px 14px -6px rgba(156,79,92,0.7);
+  transition:transform 0.12s ease, opacity 0.2s ease;
+}
+.secret-tile:active{ transform:scale(0.94); }
+.secret-tile.is-used{ opacity:0.2; pointer-events:none; }
+
+/* =========================================================
+   FINAL
+   ========================================================= */
+.finale .screen-inner{ text-align:center; padding-bottom:40px; }
+
+/* retrospectiva */
+.timeline{
+  list-style:none; margin:0 auto 40px; padding:0 0 0 22px;
+  border-left:1px solid var(--rose); max-width:360px; text-align:left;
+}
+.timeline-item{ position:relative; padding:0 0 28px 22px; }
+.timeline-item:last-child{ padding-bottom:0; }
+.timeline-item::before{
+  content:''; position:absolute; left:-27px; top:5px;
+  width:9px; height:9px; border-radius:50%;
+  background:var(--gold); box-shadow:0 0 0 3px var(--bg-cream);
+}
+.timeline-date{ display:block; font-family:var(--font-serif); font-style:italic; font-size:0.95rem; color:var(--rose-deep); margin-bottom:2px; }
+.timeline-title{ margin:0; font-size:0.95rem; color:var(--text-main); line-height:1.5; }
+
+/* carta completa */
+.final-letter{
+  font-family:var(--font-serif); font-style:italic;
+  font-size:1.3rem; line-height:1.65; color:var(--text-main);
+  max-width:46ch; margin:0 auto 40px;
+}
+.final-letter p{ margin:0 0 18px; }
+.signature{
+  font-family:var(--font-script); font-style:normal;
+  font-size:1.6rem; color:var(--rose-deep); margin-top:26px;
+}
+
+.song-section{ text-align:center; margin-bottom:40px; }
+.song-section audio{ width:100%; max-width:360px; }
+.song-embed{ max-width:360px; border-radius:12px; box-shadow:0 18px 40px -20px rgba(59,42,46,0.4); }
+.song-link{
+  display:inline-block; color:var(--rose-deep);
+  font-family:var(--font-serif); font-style:italic; font-size:1.1rem;
+  text-decoration:none; border-bottom:1px solid var(--rose); padding-bottom:2px;
+}
+
+.counter{ text-align:center; color:var(--text-soft); }
+.counter p{ margin:0; }
+.counter span{ font-family:var(--font-serif); font-size:1.6rem; color:var(--rose-deep); font-style:italic; }
+.counter-hint{ font-size:0.75rem; margin-top:2px; }
+
+/* bloque del plan (oscuro) */
+.plan-block{
+  background:radial-gradient(circle at 50% 20%, #3A2530 0%, var(--bg-deep) 70%);
+  color:var(--text-onDark); text-align:center;
+  padding:64px 24px 80px;
+}
+.divider-light .divider-svg path{ stroke:var(--gold); }
+.finale-lead{
+  font-family:var(--font-script);
+  font-size:clamp(1.8rem, 7vw, 2.2rem);
+  color:var(--text-onDark); margin:22px 0 14px;
+}
+.finale-plan{
+  font-family:var(--font-serif); font-style:italic;
+  font-size:1.2rem; color:#E8CFC9; max-width:40ch;
+  margin:0 auto 30px; line-height:1.5;
+}
+.finale-actions{ display:flex; flex-wrap:wrap; justify-content:center; gap:12px; }
+.plan-block .btn-secondary{ color:var(--text-onDark); border-color:var(--gold); }
+
+/* =========================================================
+   PÉTALOS
+   ========================================================= */
+.petals{ position:fixed; inset:0; pointer-events:none; z-index:55; overflow:hidden; }
+.petal{
+  position:absolute; top:-5%; width:10px; height:12px;
+  background:var(--rose); border-radius:0 60% 0 60%;
+  opacity:0.85; animation:petal-fall linear forwards;
+}
+@keyframes petal-fall{
+  to{ transform:translateY(115vh) translateX(var(--drift,0px)) rotate(var(--spin,360deg)); opacity:0; }
+}
+
+/* =========================================================
+   RESPONSIVE
+   ========================================================= */
+@media (min-width:600px){
+  .screen-inner{ padding-top:80px; }
+}

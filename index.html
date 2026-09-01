@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no">
+<title>Per a tu</title>
+<meta name="description" content="Una petita sorpresa per a tu">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400;1,500&family=Dancing+Script:wght@500;700&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- botó de silenci (apareix en obrir el sobre) -->
+  <button id="sound-toggle" class="sound-toggle" aria-label="So">🔊</button>
+
+  <!-- ============================================= -->
+  <!-- PORTADA: segell per obrir                      -->
+  <!-- ============================================= -->
+  <div id="cover" class="cover">
+    <div class="cover-inner">
+      <button id="seal" class="seal" aria-label="Toca per obrir">
+        <svg viewBox="0 0 100 100" class="seal-svg">
+          <path d="M50 8 C58 8 64 14 64 22 C72 22 78 28 78 36 C78 44 72 48 66 50 C72 52 78 56 78 64 C78 72 72 78 64 78 C64 86 58 92 50 92 C42 92 36 86 36 78 C28 78 22 72 22 64 C22 56 28 52 34 50 C28 48 22 44 22 36 C22 28 28 22 36 22 C36 14 42 8 50 8 Z" />
+          <text x="50" y="57" text-anchor="middle" class="seal-letter">♡</text>
+        </svg>
+      </button>
+      <h1 class="cover-title">Per a tu</h1>
+      <p class="cover-hint">toca el segell per obrir</p>
+    </div>
+  </div>
+
+  <!-- ============================================= -->
+  <!-- INTRO: noms + carrusel + començar              -->
+  <!-- ============================================= -->
+  <section id="intro" class="screen intro">
+    <div class="screen-inner">
+      <h1 class="names" id="names">Nom &amp; Nom</h1>
+      <div class="divider" aria-hidden="true">
+        <svg viewBox="0 0 60 20" class="divider-svg"><path d="M0 10 C15 -3 25 23 30 10 C35 -3 45 23 60 10" /></svg>
+      </div>
+
+      <p class="intro-lead" id="intro-lead">abans de començar…</p>
+
+      <div class="carousel-section">
+        <div class="carousel" id="carousel">
+          <div class="carousel-track" id="track"><!-- les fotos es generen des de config.js --></div>
+          <button class="carousel-arrow prev" id="prev" aria-label="Foto anterior">‹</button>
+          <button class="carousel-arrow next" id="next" aria-label="Foto següent">›</button>
+        </div>
+        <div class="dots" id="dots"></div>
+      </div>
+
+      <button id="start-game" class="btn-primary btn-lg">Començar el joc</button>
+    </div>
+  </section>
+
+  <!-- ============================================= -->
+  <!-- CAMÍ: el centre de nivells                      -->
+  <!-- ============================================= -->
+  <section id="trail-screen" class="screen trail-screen">
+    <div class="screen-inner">
+      <header class="trail-head">
+        <p class="section-lead" id="trail-lead">La teva missió: reuneix les 5 pistes.</p>
+        <div class="letters-tray" id="letters-tray" aria-label="Pistes aconseguides"></div>
+        <p class="progress-label" id="progress-label"></p>
+      </header>
+
+      <ol class="trail" id="trail"></ol>
+
+      <button id="open-secret" class="btn-primary btn-lg" hidden>Introduir el codi</button>
+    </div>
+  </section>
+
+  <!-- ============================================= -->
+  <!-- PANELL DE JOC (overlay)                         -->
+  <!-- ============================================= -->
+  <div id="game-panel" class="overlay">
+    <div class="panel-card">
+      <header class="panel-head">
+        <button id="game-close" class="icon-btn" aria-label="Tornar al camí">‹</button>
+        <h2 id="game-title"></h2>
+      </header>
+      <p id="game-intro" class="game-intro"></p>
+      <div id="game-stage" class="game-stage"></div>
+      <footer class="panel-foot">
+        <button id="game-hint" class="link-btn">t'ajudo?</button>
+      </footer>
+    </div>
+  </div>
+
+  <!-- ============================================= -->
+  <!-- RECOMPENSA (overlay)                           -->
+  <!-- ============================================= -->
+  <div id="reward" class="overlay">
+    <div class="reward-card">
+      <p class="reward-kicker">Pista aconseguida!</p>
+      <div class="reward-letter" id="reward-letter"></div>
+      <div class="reward-note" id="reward-fragment"></div>
+      <button id="reward-continue" class="btn-primary">Continua</button>
+    </div>
+  </div>
+
+  <!-- ============================================= -->
+  <!-- CODI SECRET (overlay)                           -->
+  <!-- ============================================= -->
+  <div id="secret-gate" class="overlay">
+    <div class="secret-card">
+      <p class="section-lead">El codi secret</p>
+      <p class="secret-hint" id="secret-hint"></p>
+      <div class="secret-slots" id="secret-slots"></div>
+      <div class="secret-tiles" id="secret-tiles"></div>
+      <p class="game-feedback" id="secret-feedback"></p>
+    </div>
+  </div>
+
+  <!-- ============================================= -->
+  <!-- FINAL: retrospectiva + carta + cançó + pla      -->
+  <!-- ============================================= -->
+  <section id="finale" class="screen finale">
+    <div class="screen-inner">
+      <div class="divider" aria-hidden="true">
+        <svg viewBox="0 0 60 20" class="divider-svg"><path d="M0 10 C15 -3 25 23 30 10 C35 -3 45 23 60 10" /></svg>
+      </div>
+
+      <p class="section-lead">la nostra història</p>
+      <ol class="timeline" id="timeline"></ol>
+
+      <div class="final-letter" id="final-letter" aria-label="Carta completa"></div>
+
+      <div class="song-section" id="song-section">
+        <p class="section-lead">la nostra cançó</p>
+        <audio id="song" controls preload="none" src="audio/cancion.mp3"></audio>
+      </div>
+
+      <div class="counter">
+        <p><span id="days">0</span> dies junts</p>
+        <p class="counter-hint">(i sumant)</p>
+      </div>
+    </div>
+
+    <!-- bloc final fosc: el pla real -->
+    <div class="plan-block">
+      <div class="divider divider-light" aria-hidden="true">
+        <svg viewBox="0 0 60 20" class="divider-svg"><path d="M0 10 C15 -3 25 23 30 10 C35 -3 45 23 60 10" /></svg>
+      </div>
+      <p class="finale-lead" id="finale-lead">i això no s'acaba aquí</p>
+      <p class="finale-plan" id="finale-plan"></p>
+      <div class="finale-actions">
+        <button id="add-calendar" class="btn-primary">Afegir al meu calendari</button>
+        <a id="open-map" class="btn-secondary" href="#" target="_blank" rel="noopener">Com arribar-hi</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- capa on cauen els pètals -->
+  <div class="petals" id="petals" aria-hidden="true"></div>
+
+  <script src="config.js"></script>
+  <script src="games.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
