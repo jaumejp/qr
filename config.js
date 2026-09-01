@@ -69,7 +69,7 @@ const CONFIG = {
       type: 'wordsearch',
       title: 'Paraules amagades',
       intro: 'Troba les paraules. Arrossega el dit per sobre de les lletres.',
-      words: ['ESTIMAR', 'ABRAÇADA', 'SEMPRE', 'GUAPA', 'OBSERVADORA', 'INTELIGENT'],   // [EDITA AQUÍ] MAJÚSCULES, sense espais
+      words: ['ESTIMAR', 'ABRAÇADA', 'SEMPRE', 'GUAPA', 'OBSERVADORA', 'INTELIGENT', 'DOLÇA', 'AMIGA'],   // [EDITA AQUÍ] MAJÚSCULES, sense espais
       size: 11,
       letter: 'I',
       fragment: "M'agrada la passió, les ganes i el detall que poses en tot el que fas, també en la feina. Ets una inspiració! ❤️",
@@ -96,10 +96,10 @@ const CONFIG = {
           title: 'Del castellà al català',
           pairs: [
             ['desahuciar', 'desnonar'],
-            ['tobillo', 'turmell'],
+            ['bellota', 'aglà'],
             ['bisagra', 'frontissa'],
             ['canapé', 'sofà llit'],
-            ['estornudo', 'esternut'],
+            ['xerigot', 'suero'],
           ],
         },
       ],
@@ -210,8 +210,8 @@ const CONFIG = {
           correct: 2 
         },
         { 
-          question: 'En quin lloc i context vaig pujar per primer cop al teu cotxe? Recordem la història que no la recordo...', 
-          options: ["Gràcies a l'Anna", "Gràcies a la Omayma", "Gràcies a en Marc", "Gràcies a l'Àlex"], 
+          question: 'En quin lloc i context vaig pujar per primer cop al teu cotxe? Va ser gràcies a... Recordem la història que no la recordo...', 
+          options: ["L'Anna", "La Omayma", "A en Marc", "A l'Àlex"], 
           correc
         }
       ],
