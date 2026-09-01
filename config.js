@@ -212,7 +212,7 @@ const CONFIG = {
         {
           question: 'En quin lloc i context vaig pujar per primer cop al teu cotxe? Va ser gràcies a... Recordem la història que no la recordo...',
           options: ["L'Anna", "La Omayma", "A en Marc", "A l'Àlex"],
-          correct: 0   // ⚠️ JAUME: posa la resposta bona (0=L'Anna, 1=La Omayma, 2=A en Marc, 3=A l'Àlex)
+          correct: 3   // resposta bona: A l'Àlex
         }
       ],
       letter: '!',
