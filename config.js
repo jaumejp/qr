@@ -23,7 +23,7 @@ const CONFIG = {
   /* ---- 3. FOTOS DEL CARRUSEL ----------------------------- */
   // Posa les fotos a la carpeta /photos amb aquests noms
   // (o canvia els noms aquí). Mentre no existeixin, es veu un avís.
-  photos: ['foto1.jpg', 'foto2.jpg', 'foto3.jpg', 'foto4.jpg', 'foto5.jpg'],
+  photos: ['foto1.jpg', 'foto2.jpg', 'foto3.jpg', 'foto4.jpg', 'foto5.jpg', 'foto6.jpg'],
 
   /* ---- 4. COMPTADOR DE DIES ------------------------------ */
   startDate:    '2026-01-06',             // [EDITA AQUÍ] AAAA-MM-DD
@@ -48,7 +48,7 @@ const CONFIG = {
       type: 'puzzle',
       title: 'El record trencat',
       intro: 'Recompon la foto. Toca dues peces per intercanviar-les.',
-      photo: 'foto1.jpg',       // [EDITA AQUÍ]
+      photo: 'foto7.jpg',       // [EDITA AQUÍ] foto exclusiva del puzzle (les 6 del carrusel són foto1..foto6)
       size: 3,
       letter: 'S',
       fragment: "Primer vam ser coneguts/amics, i ja de llavors eres la persona amb qui tot era més fàcil. Només faltava un petit impuls perquè tot començes a rodar...",
@@ -99,7 +99,7 @@ const CONFIG = {
             ['bellota', 'aglà'],
             ['bisagra', 'frontissa'],
             ['canapé', 'sofà llit'],
-            ['xerigot', 'suero'],
+            ['suero', 'xerigot'],
           ],
         },
       ],
@@ -209,13 +209,36 @@ const CONFIG = {
           options: ['Tempura de verdures', 'Niguiri de salmó', 'Yakisoba de llangostí', 'Yakisoba de verdures'], 
           correct: 2 
         },
-        { 
-          question: 'En quin lloc i context vaig pujar per primer cop al teu cotxe? Va ser gràcies a... Recordem la història que no la recordo...', 
-          options: ["L'Anna", "La Omayma", "A en Marc", "A l'Àlex"], 
-          correc
+        {
+          question: 'En quin lloc i context vaig pujar per primer cop al teu cotxe? Va ser gràcies a... Recordem la història que no la recordo...',
+          options: ["L'Anna", "La Omayma", "A en Marc", "A l'Àlex"],
+          correct: 0   // ⚠️ JAUME: posa la resposta bona (0=L'Anna, 1=La Omayma, 2=A en Marc, 3=A l'Àlex)
         }
       ],
       letter: '!',
+      fragment: "Ho recordes tot, i això em fa feliç. Però encara no hem acabat: em queden un parell de coses per demanar-te… i no seran fàcils d'atrapar.",
+    },
+
+    /* -------- NIVELL 9 · CÀMERA · CAÇA EL COR -------- */
+    // Joc nou de realitat augmentada (necessita càmera i https/localhost).
+    // La "letter" A és una PEÇA TRAMPA: no forma part del codi secret.
+    {
+      type: 'ar',
+      mode: 'flee',
+      title: 'Caça el cor volador',
+      intro: 'Obre la càmera i atrapa aquest cor abans que fugi. No serà fàcil!',
+      letter: 'A',   // lletra "trampa": no forma part del codi secret
+      fragment: "A vegades cal perseguir una mica el que vols. Jo t'he perseguit (una mica, eh) fins arribar aquí, amb tu.",
+    },
+
+    /* -------- NIVELL 10 · CÀMERA · TROBA L'ESPURNA -------- */
+    // La "letter" R és una PEÇA TRAMPA: no forma part del codi secret.
+    {
+      type: 'ar',
+      mode: 'focus',
+      title: "Troba l'espurna amagada",
+      intro: 'Hi ha una espurna invisible amagada a la pantalla. Segueix el fred i calent per trobar-la, i queda\'t quiet quan cremi.',
+      letter: 'R',   // lletra "trampa": no forma part del codi secret
       fragment: "Ja ho tens gairebé tot. Només et queda ordenar les lletres per llegir el que et vull dir.",
     },
 
@@ -251,3 +274,7 @@ const CONFIG = {
   allowHint:    true,   // botó "t'ajudo?" perquè no s'encalli mai
   sound:        true,   // sons suaus en encertar
 };
+
+// El joc de parelles (memory) fa servir les mateixes 6 fotos del carrusel.
+// Així, si canvies CONFIG.photos, les parelles s'actualitzen soles.
+CONFIG.levels.find(l => l.type === 'memory').cards = CONFIG.photos.slice();

@@ -1,17 +1,22 @@
 # Sorpresa 💌 — la gimcana
 
 Web estàtica (HTML/CSS/JS pur, sense build ni dependències) llesta per a GitHub Pages.
-En escanejar el QR, la teva parella es troba un **sobre** que obre, un **carrusel** de fotos, i
-una **gimcana de 5 nivells**: cada minijoc que supera li dona una **pista (una lletra)** i un
-**tros de la teva carta**. Amb les 5 lletres desxifra un **codi secret** que desbloqueja el final:
-la vostra retrospectiva, la cançó, el comptador de dies i **el pla real**.
+Primer surt la **cançó** (l'ha d'engegar), després un **sobre** que obre i un **carrusel** de fotos,
+i llavors una **gimcana de 10 nivells**: cada minijoc que supera li dona una **peça (una lletra)** i
+un **tros de la teva carta**. Reunint les peces desxifra un **codi secret** (`T'ESTIMO!`) que
+desbloqueja el final: la vostra retrospectiva, el comptador de dies i **el pla real**.
 
-## Els nivells
-1. **Puzzle de foto** — recompondre una foto vostra intercanviant peces.
-2. **Sopa de lletres** — trobar paraules arrossegant el dit.
-3. **Memory** — trobar les parelles de cartes.
-4. **Endevina amb emojis** — deduir la frase de cada línia d'emojis.
-5. **Quiz** — preguntes sobre vosaltres.
+## Els nivells (10)
+1. **Puzzle de foto** — recompondre una foto (`foto7.jpg`) intercanviant peces.
+2. **Memory** — trobar les parelles (les 6 fotos del carrusel).
+3. **Sopa de lletres** — trobar paraules arrossegant el dit.
+4. **Relaciona** — dues columnes: sinònims i traduccions.
+5. **Pronominalitza** — triar la forma correcta amb pronoms febles.
+6. **Francès** — sona una frase i l'escriu o ordena les paraules.
+7. **Endevina amb emojis** — deduir la frase de cada línia d'emojis.
+8. **Quiz** — preguntes sobre vosaltres.
+9. **Càmera · caça el cor** — realitat augmentada: atrapar un cor que fuig.
+10. **Càmera · troba l'espurna** — trobar un punt invisible pel fred/calent.
 
 ---
 
@@ -27,41 +32,50 @@ seccions:
 | `photos` | Noms de les fotos del carrusel (veure més avall). |
 | `startDate` | Data en què vau començar (comptador de dies). |
 | `secretCode`, `secretHint` | La paraula final i la seva pista. |
-| `levels` | Els 5 nivells: dades de cada joc, la seva **lletra** i el seu **tros de carta**. |
+| `musicLead`, `musicButton` | Text i botó de la pantalla de la cançó (surt primer). |
+| `levels` | Els 10 nivells: dades de cada joc, la seva **lletra** i el seu **tros de carta**. |
 | `milestones` | La retrospectiva que es veu al final. |
 | `signature`, `songLink` | Signatura de la carta i cançó. |
 | `finaleLead`, `finalePlan`, `plan` | El pla real + botó de calendari i mapa. |
 
 ### El codi secret (important)
-Cada nivell entrega **una lletra** (camp `letter`). En acabar els 5, ella haurà d'**ordenar
-aquestes 5 lletres** per formar `secretCode`.
+Cada nivell entrega **una lletra** (camp `letter`). En acabar-los, ella ha d'**ordenar les peces**
+per formar `secretCode` (`T'ESTIMO!`).
 
-➡️ **Regla:** les lletres de `secretCode` han de ser exactament les mateixes que les 5 lletres dels
-nivells (l'ordre és igual, els espais s'ignoren). Per defecte:
+➡️ **Regla:** l'apòstrof i els espais es dibuixen sols com a separadors (no calen peces). La resta de
+caràcters (lletres **i el `!`**) sí que són peces. Els 8 caràcters de `T'ESTIMO!` són:
+`T · E · S · T · I · M · O · !`.
 
-```
-Nivells:  E · T · S · T · U      secretCode: 'ETS TU'
-```
-
-Si canvies la paraula final, canvia també les `letter` dels nivells perquè quadrin. Idees de
-5 lletres: `ETS TU`, `PER TU`, un nom, una data curta… Si vols una paraula més llarga (p. ex.
-`T'ESTIMO`, 7 lletres), afegeix o repeteix nivells fins que hi hagi tantes lletres com nivells.
+⚠️ **Peces trampa:** els 2 nivells de càmera donen les lletres **A** i **R**, que **no** formen part
+del codi. Són decoys a propòsit: al final hi ha 10 fitxes però només 8 caselles, i ella ha de
+descartar la A i la R. Si vols treure la trampa, canvia aquestes `letter` per caràcters que sí que
+surtin a `secretCode`.
 
 ### La carta trossejada
 El camp `fragment` de cada nivell és un tros de la teva carta. Es revela com a premi en superar el
-nivell i, al final, **els 5 trossos s'ajunten** en una carta completa amb la teva `signature`.
+nivell i, al final, **tots els trossos s'ajunten** en una carta completa amb la teva `signature`.
 Escriu-los perquè tinguin sentit llegits seguits, en l'ordre dels nivells.
 
 ---
 
-## 📷 Fotos
-Copia les teves fotos a la carpeta `photos/` amb els noms que posis a `config.js`
-(`photos: ['foto1.jpg', ...]`). El **puzzle** fa servir la foto del camp `photo` del nivell 1.
+## 📷 Fotos — calen 7 fitxers a `photos/`
+- `foto1.jpg` … `foto6.jpg` → es fan servir al **carrusel** inicial **i** al **memory** (les mateixes 6).
+- `foto7.jpg` → exclusiva del **puzzle** (nivell 1).
 
-- Serveixen `.jpg`, `.png` o `.webp`.
+El memory reutilitza automàticament `CONFIG.photos` (hi ha una línia al final de `config.js` que ho
+fa), així que només has de mantenir la llista `photos` i el `photo` del puzzle.
+
+- Serveixen `.jpg`, `.png` o `.webp` (si canvies l'extensió, canvia-la també a `config.js`).
 - Mentre una foto no existeixi, es mostra un avís al seu lloc (pots provar la web sense fotos encara).
 - **Comprimeix les fotos** abans de pujar-les (<500 KB) perquè carregui ràpid en escanejar el QR:
   [squoosh.app](https://squoosh.app).
+
+## 📸 Els 2 nivells de càmera (realitat augmentada)
+Els nivells 9 i 10 obren la **càmera** del mòbil (un cor que flota sobre la imatge real, i un punt
+amagat). Necessiten:
+- **HTTPS** — GitHub Pages ja el dona, així que en producció funciona sol (en local, `localhost` també val).
+- **Permís de càmera** — el mòbil li demanarà; si el denega, el joc segueix funcionant amb un fons
+  romàntic en lloc de la càmera (no es queda encallada).
 
 ## 🎵 Cançó
 Dues opcions a `songLink`:

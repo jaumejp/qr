@@ -122,11 +122,11 @@ Games.puzzle = function(stage, level, onComplete){
    NIVEL TIPO "wordsearch" — sopa de letras
    ========================================================= */
 Games.wordsearch = function(stage, level, onComplete){
-  const N = level.size || 10;
-  const words = level.words.map(normalize).filter(Boolean);
-  const grid = Array.from({ length: N }, () => Array(N).fill(''));
-  const solutions = {};                       // palabra -> ["r,c", ...]
   const DIRS = [[0, 1], [1, 0], [1, 1], [1, -1]];
+  const rawWords = level.words.map(normalize).filter(Boolean);
+  // la graella ha de ser, com a mínim, tan gran com la paraula més llarga
+  let N = Math.max(level.size || 10, ...rawWords.map(w => w.length));
+  let grid, solutions, words;
 
   function fits(word, r, c, dr, dc){
     for(let k = 0; k < word.length; k++){
@@ -154,8 +154,17 @@ Games.wordsearch = function(stage, level, onComplete){
     }
     return false;
   }
-  // coloca primero las largas; rellena huecos con letras al azar
-  [...words].sort((a, b) => b.length - a.length).forEach(place);
+
+  // munta la graella; si alguna paraula no hi cap, l'engrandeix i torna-ho a
+  // provar (així no es perd cap paraula ni peta la pista d'una no col·locada)
+  for(let attempt = 0; ; attempt++){
+    grid = Array.from({ length: N }, () => Array(N).fill(''));
+    solutions = {};
+    [...rawWords].sort((a, b) => b.length - a.length).forEach(place);
+    words = rawWords.filter(w => solutions[w]);
+    if(words.length === rawWords.length || attempt >= 6) break;
+    N++;
+  }
   const POOL = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
   for(let r = 0; r < N; r++)
     for(let c = 0; c < N; c++)
@@ -279,10 +288,14 @@ Games.memory = function(stage, level, onComplete){
     const card = document.createElement('button');
     card.className = 'memory-card';
     card.dataset.sym = sym;
+    const isPhoto = /\.(jpe?g|png|webp|gif)$/i.test(sym);
+    const front = isPhoto
+      ? '<img src="photos/' + sym + '" alt="" class="memory-photo" onerror="this.outerHTML=\'' + sym.replace(/'/g, "&#39;") + '\'">'
+      : sym;
     card.innerHTML =
       '<span class="memory-inner">' +
         '<span class="memory-face memory-back">♡</span>' +
-        '<span class="memory-face memory-front">' + sym + '</span>' +
+        '<span class="memory-face memory-front">' + front + '</span>' +
       '</span>';
     card.addEventListener('click', () => flip(card));
     grid.appendChild(card);
@@ -641,5 +654,236 @@ Games.french = function(stage, level, onComplete){
 
   return {
     hint(){ fb.textContent = '👉 ' + level.rounds[ri].fr; }   // revela la resposta
+  };
+};
+
+
+/* =========================================================
+   NIVEL TIPO "ar" — realitat augmentada amb la càmera
+   =========================================================
+   Dos modes possibles (level.mode):
+     'flee'  -> un cor apareix flotant sobre la imatge real de la
+                càmera i FUIG quan hi acostes el dit. Cal mantenir
+                el dit a sobre fins omplir el medidor de captura.
+     'focus' -> hi ha un punt invisible en algun lloc de la pantalla.
+                Arrossegant el dit reps pistes de "fred / calent"
+                (amb vibració) i, quan hi ets a sobre, cal quedar-te
+                ben quiet uns segons per "enfocar-lo" i capturar-lo.
+
+   Si el navegador denega o no té càmera, el joc segueix funcionant
+   igual amb un fons alternatiu (definit per CSS, classe .no-video).
+   IMPORTANT: getUserMedia necessita un context segur (https, o bé
+   localhost en local).
+   ========================================================= */
+Games.ar = function(stage, level, onComplete){
+  const mode = level.mode || 'flee';
+  let stream = null;
+  let done = false;
+  const cleanupFns = [];
+
+  stage.innerHTML = '';
+  const wrap = document.createElement('div'); wrap.className = 'ar-wrap'; stage.appendChild(wrap);
+
+  const camWrap = document.createElement('div'); camWrap.className = 'ar-camera'; wrap.appendChild(camWrap);
+  const video = document.createElement('video');
+  video.setAttribute('playsinline', '');
+  video.muted = true;
+  video.autoplay = true;
+  camWrap.appendChild(video);
+
+  const overlay = document.createElement('div'); overlay.className = 'ar-overlay'; camWrap.appendChild(overlay);
+
+  const hud = document.createElement('div'); hud.className = 'ar-hud'; wrap.appendChild(hud);
+  const fb = document.createElement('p'); fb.className = 'game-feedback'; wrap.appendChild(fb);
+
+  const startBtn = document.createElement('button');
+  startBtn.className = 'pill-option ar-start';
+  startBtn.textContent = mode === 'flee'
+    ? '📷 Obre la càmera i comença la caça'
+    : '📷 Obre la càmera i comença la cerca';
+  wrap.appendChild(startBtn);
+
+  async function startCamera(){
+    try{
+      stream = await navigator.mediaDevices.getUserMedia({
+        video: { facingMode: 'environment' },
+        audio: false,
+      });
+      video.srcObject = stream;
+      await video.play();
+      camWrap.classList.add('has-video');
+    }catch(e){
+      camWrap.classList.add('no-video');
+      fb.textContent = 'No he pogut obrir la càmera, però pots jugar igualment ✨';
+    }
+  }
+
+  startBtn.addEventListener('click', () => {
+    startBtn.remove();
+    startCamera().then(() => { mode === 'flee' ? initFlee() : initFocus(); });
+  }, { once: true });
+
+  /* ---------------- mode 1: el cor que fuig ---------------- */
+  function initFlee(){
+    const target = document.createElement('div'); target.className = 'ar-heart'; target.textContent = '💗';
+    overlay.appendChild(target);
+
+    const meterWrap = document.createElement('div'); meterWrap.className = 'ar-meter'; hud.appendChild(meterWrap);
+    const meterFill = document.createElement('div'); meterFill.className = 'ar-meter-fill'; meterWrap.appendChild(meterFill);
+    const tip = document.createElement('p'); tip.className = 'ar-tip';
+    tip.textContent = 'Mantén el dit sobre el cor fins atrapar-lo del tot. Fugirà!';
+    hud.appendChild(tip);
+
+    let w = overlay.clientWidth || 300, h = overlay.clientHeight || 400;
+    let x = w / 2, y = h / 2;
+    let vx = (Math.random() - 0.5) * 120, vy = (Math.random() - 0.5) * 120;
+    let pointer = null, meter = 0, last = performance.now(), raf = null;
+    const RADIUS = 34, CATCH = 100;
+
+    function onMove(e){
+      const r = overlay.getBoundingClientRect();
+      pointer = { x: e.clientX - r.left, y: e.clientY - r.top };
+    }
+    function onLeave(){ pointer = null; }
+
+    overlay.style.touchAction = 'none';
+    overlay.addEventListener('pointerdown', onMove);
+    overlay.addEventListener('pointermove', onMove);
+    overlay.addEventListener('pointerup', onLeave);
+    overlay.addEventListener('pointerleave', onLeave);
+    overlay.addEventListener('pointercancel', onLeave);
+
+    function tick(now){
+      if(done) return;
+      const dt = Math.min(0.05, (now - last) / 1000); last = now;
+      w = overlay.clientWidth || w; h = overlay.clientHeight || h;
+
+      vx += (Math.random() - 0.5) * 40 * dt;
+      vy += (Math.random() - 0.5) * 40 * dt;
+
+      let contact = false;
+      if(pointer){
+        const dx = x - pointer.x, dy = y - pointer.y;
+        const dist = Math.hypot(dx, dy) || 1;
+        if(dist < RADIUS + 20){
+          contact = true;
+          const flee = 160 + meter * 2.2;
+          vx += (dx / dist) * flee * dt;
+          vy += (dy / dist) * flee * dt;
+        }
+      }
+      const speed = Math.hypot(vx, vy);
+      const maxSpeed = 230;
+      if(speed > maxSpeed){ vx = (vx / speed) * maxSpeed; vy = (vy / speed) * maxSpeed; }
+
+      x += vx * dt; y += vy * dt;
+      if(x < RADIUS){ x = RADIUS; vx = Math.abs(vx); }
+      if(x > w - RADIUS){ x = w - RADIUS; vx = -Math.abs(vx); }
+      if(y < RADIUS){ y = RADIUS; vy = Math.abs(vy); }
+      if(y > h - RADIUS){ y = h - RADIUS; vy = -Math.abs(vy); }
+
+      meter = contact ? Math.min(CATCH, meter + 34 * dt) : Math.max(0, meter - 22 * dt);
+      meterFill.style.width = meter + '%';
+      target.style.transform = `translate(${x - RADIUS}px, ${y - RADIUS}px) scale(${1 + (meter / CATCH) * 0.18})`;
+      target.classList.toggle('is-hot', meter > CATCH * 0.7);
+
+      if(meter >= CATCH && !done){
+        done = true;
+        App.ding();
+        target.classList.add('is-caught');
+        setTimeout(onComplete, 700);
+        return;
+      }
+      raf = requestAnimationFrame(tick);
+    }
+    raf = requestAnimationFrame(tick);
+
+    cleanupFns.push(() => {
+      if(raf) cancelAnimationFrame(raf);
+      overlay.removeEventListener('pointerdown', onMove);
+      overlay.removeEventListener('pointermove', onMove);
+      overlay.removeEventListener('pointerup', onLeave);
+      overlay.removeEventListener('pointerleave', onLeave);
+      overlay.removeEventListener('pointercancel', onLeave);
+    });
+  }
+
+  /* ---------------- mode 2: l'espurna amagada ---------------- */
+  function initFocus(){
+    const marker = document.createElement('div'); marker.className = 'ar-spark';
+    overlay.appendChild(marker);
+
+    const meterWrap = document.createElement('div'); meterWrap.className = 'ar-meter'; hud.appendChild(meterWrap);
+    const meterFill = document.createElement('div'); meterFill.className = 'ar-meter-fill'; meterWrap.appendChild(meterFill);
+    const temp = document.createElement('p'); temp.className = 'ar-tip';
+    temp.textContent = 'Mou el dit lentament per la pantalla… et diré si crema o si està gelat.';
+    hud.appendChild(temp);
+
+    let w = overlay.clientWidth || 300, h = overlay.clientHeight || 400;
+    let tx = 0, ty = 0, focus = 0, lastPointer = null, done2 = false;
+    const NEED = 100, CATCH_R = 26;
+
+    function place(){
+      w = overlay.clientWidth || w; h = overlay.clientHeight || h;
+      tx = 40 + Math.random() * Math.max(1, w - 80);
+      ty = 40 + Math.random() * Math.max(1, h - 80);
+    }
+    place();
+
+    function onMove(e){
+      if(done2) return;
+      const r = overlay.getBoundingClientRect();
+      const px = e.clientX - r.left, py = e.clientY - r.top;
+      const dist = Math.hypot(px - tx, py - ty);
+      const maxDist = Math.hypot(w, h) || 1;
+      const closeness = 1 - Math.min(1, dist / (maxDist * 0.5));
+
+      if(dist < CATCH_R){
+        temp.textContent = '🔥 Cremant! No et moguis…';
+        marker.classList.add('is-visible');
+        marker.style.left = tx + 'px';
+        marker.style.top = ty + 'px';
+        const jitter = lastPointer ? Math.hypot(px - lastPointer.x, py - lastPointer.y) : 0;
+        if(jitter < 6){ focus = Math.min(NEED, focus + 3.2); }
+        else { focus = Math.max(0, focus - 6); }
+        if(navigator.vibrate) { try{ navigator.vibrate(6); }catch(e){} }
+      } else {
+        marker.classList.remove('is-visible');
+        focus = Math.max(0, focus - 4);
+        if(closeness > 0.75) temp.textContent = '🥵 Molt a prop…';
+        else if(closeness > 0.45) temp.textContent = '😳 Tebi…';
+        else temp.textContent = '🥶 Fred, fred…';
+      }
+      meterFill.style.width = focus + '%';
+      lastPointer = { x: px, y: py };
+
+      if(focus >= NEED && !done2){
+        done2 = true; done = true;
+        App.ding();
+        marker.classList.add('is-caught');
+        setTimeout(onComplete, 700);
+      }
+    }
+
+    overlay.style.touchAction = 'none';
+    overlay.addEventListener('pointermove', onMove);
+    overlay.addEventListener('pointerdown', onMove);
+
+    cleanupFns.push(() => {
+      overlay.removeEventListener('pointermove', onMove);
+      overlay.removeEventListener('pointerdown', onMove);
+    });
+  }
+
+  return {
+    hint(){
+      fb.textContent = mode === 'flee'
+        ? '👉 Truc: acorrala el cor contra una cantonada de la pantalla, allà li costa fugir.'
+        : '👉 Truc: mou el dit a poc a poc en espiral, començant pel centre de la pantalla.';
+    },
+    cleanup(){
+      cleanupFns.forEach(fn => { try{ fn(); }catch(e){} });
+      if(stream){ stream.getTracks().forEach(t => t.stop()); }
+    }
   };
 };
