@@ -23,7 +23,7 @@ const CONFIG = {
   /* ---- 3. FOTOS DEL CARRUSEL ----------------------------- */
   // Posa les fotos a la carpeta /photos amb aquests noms
   // (o canvia els noms aquí). Mentre no existeixin, es veu un avís.
-  photos: ['foto1.jpg', 'foto2.jpg', 'foto3.jpg', 'foto4.jpg', 'foto5.jpg', 'foto6.jpg'],
+  photos: ['foto1.jpeg', 'foto2.jpeg', 'foto3.jpeg', 'foto4.jpeg', 'foto5.jpeg', 'foto6.jpeg'],
 
   /* ---- 4. COMPTADOR DE DIES ------------------------------ */
   startDate:    '2026-01-06',             // [EDITA AQUÍ] AAAA-MM-DD
@@ -48,7 +48,7 @@ const CONFIG = {
       type: 'puzzle',
       title: 'El record trencat',
       intro: 'Recompon la foto. Toca dues peces per intercanviar-les.',
-      photo: 'foto7.jpg',       // [EDITA AQUÍ] foto exclusiva del puzzle (les 6 del carrusel són foto1..foto6)
+      photo: 'foto7.jpeg',       // [EDITA AQUÍ] foto exclusiva del puzzle (les 6 del carrusel són foto1..foto6)
       size: 3,
       letter: 'S',
       fragment: "Primer vam ser coneguts/amics, i ja de llavors eres la persona amb qui tot era més fàcil. Només faltava un petit impuls perquè tot començes a rodar...",
